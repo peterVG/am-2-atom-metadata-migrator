@@ -61,8 +61,7 @@ for aip in allaips:
             mysqlCursor.close()
 
             sql = "SELECT `slug` FROM slug WHERE `object_id`= %s"
-            mysqlCursor.execute(sql, (object_id))
-            slug = mysqlCursor.fetchone()
+            slug = mysqlCursor.execute(sql, (object_id))
 
             # update am-2-atom link status
             sql = "UPDATE aipfiles SET atomURL = ?, atomSlug = ?, atomLinkStatus = ?, atomLinkDate = ? WHERE uuid = ?"
