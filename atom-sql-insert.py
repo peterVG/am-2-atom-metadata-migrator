@@ -65,7 +65,7 @@ for aip in allaips:
             slug = mysqlCursor.fetchone()
 
             # update am-2-atom link status
-            sql = "UPDATE aipfiles SET atomURL = ?, atomSlug = ?, atomLinkStatus = ?, atomLinkDate  WHERE uuid = ?"
+            sql = "UPDATE aipfiles SET atomURL = ?, atomSlug = ?, atomLinkStatus = ?, atomLinkDate = ? WHERE uuid = ?"
             sqliteCursor.execute(
                 sql,
                 (atomSiteURL, slug, "success", str(datetime.datetime.now()), aip[0]),
@@ -74,7 +74,7 @@ for aip in allaips:
 
     except:
         # update am-2-atom link status
-        sql = "UPDATE aipfiles SET atomLinkStatus = ?, atomLinkDate  WHERE uuid = ?"
+        sql = "UPDATE aipfiles SET atomLinkStatus = ?, atomLinkDate = ? WHERE uuid = ?"
         sqliteCursor.execute(sql, ("fail", str(datetime.datetime.now()), aip[0]))
         sqliteDb.commit()
 
