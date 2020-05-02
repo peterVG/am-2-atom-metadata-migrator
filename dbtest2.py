@@ -19,5 +19,11 @@ with mysqlConnection:
     object_id = result["object_id"]
     print(object_id)
 
+    sql = "SELECT `slug` FROM slug WHERE `object_id`= %s"
+    mysqlCursor.execute(sql, object_id)
+    result = mysqlCursor.fetchone()
+    slug = result["slug"]
+    print(slug) 
+
     mysqlCursor.close()
-    mysqlConnection.close()
+mysqlConnection.close()
