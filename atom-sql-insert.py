@@ -75,7 +75,7 @@ for aip in allaips:
     except:
         # update am-2-atom link status
         sql = "UPDATE aipfiles SET atomLinkStatus = ?, atomLinkDate  WHERE uuid = ?"
-        sqliteCursor.execute(sql, ("fail", str(datetime.datetime.now())), aip[0])
+        sqliteCursor.execute(sql, ("fail", str(datetime.datetime.now()), aip[0]))
         sqliteDb.commit()
 
 mysqlConnection.close()
