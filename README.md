@@ -25,4 +25,5 @@ This tool reads data from the Archivematica Elasticsearch index and inserts it i
 * The script will update the Sqlite database to record all matches that were made, along with their AtoM permalink slugs.
 * It will also record all those Archivematica AIP files for which a match was not found or if the matching process had a failure.
 * The script can be run at subsequent times, after the Sqlite database has been updated with more Archivematica Elasticsearch data or after updates to the AtoM site. It will skip AIP files and AtoM descriptions that have already been matched.
+* Make a backup of your Sqlite database file (or put in under Git version control) so you can recover your unique data mapping information in the event of loss or failure.
 * A future version of this tool may provide a GUI to the Sqlite information. In the meanwhile, you can use the free **DB Browser for Sqlite** tool to browse the Sqlite database contents and track the Archivematica to AtoM matches. See https://sqlitebrowser.org/.
