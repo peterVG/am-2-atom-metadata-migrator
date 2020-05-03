@@ -27,11 +27,11 @@ for aipfile in allaipfiles:
     if aipfile[11] == "success":
         print(aipfile[3] + " already matched")
         continue
+
     try:
-
         with mysqlConnection:
-            mysqlCursor = mysqlConnection.cursor()
 
+            mysqlCursor = mysqlConnection.cursor()
             sql = "SELECT `object_id` FROM digital_object WHERE `name`= %s"
             # find match for aipfile's filename
             mysqlCursor.execute(sql, (aipfile[3]))
@@ -97,7 +97,8 @@ for aipfile in allaipfiles:
                 # update am-2-atom link status
                 sql = "UPDATE aipfiles SET atomURL = ?, atomLinkStatus = ?, atomLinkDate = ? WHERE uuid = ?"
                 sqliteCursor.execute(
-                    sql, (atomSiteURL, "no match", str(datetime.datetime.now()), aip[0])
+                    sql,
+                    (atomSiteURL, "no match", str(datetime.datetime.now()), aipfile[0]),
                 )
 
                 sqliteDb.commit()
