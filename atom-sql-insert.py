@@ -25,7 +25,7 @@ allaipfiles = sqliteCursor.fetchall()
 for aipfile in allaipfiles:
     # skip file if has already been matched
     if aipfile[11] == "success":
-        print(aipfile[3] + " already matched")
+        print("already matched: " + aipfile[3])
         continue
 
     try:
@@ -38,7 +38,7 @@ for aipfile in allaipfiles:
             result = mysqlCursor.fetchone()
 
             if result:
-                print("match found for " + aipfile[3])
+                print("match found for: " + aipfile[3])
 
                 # assign AtoM information object match
                 object_id = result["object_id"]
@@ -92,7 +92,7 @@ for aipfile in allaipfiles:
             else:
                 mysqlCursor.close()
 
-                print("no match found for " + aipfile[3])
+                print("no match found for: " + aipfile[3])
 
                 # update am-2-atom link status
                 sql = "UPDATE aipfiles SET atomURL = ?, atomLinkStatus = ?, atomLinkDate = ? WHERE uuid = ?"
@@ -106,7 +106,7 @@ for aipfile in allaipfiles:
     except:
         mysqlCursor.close()
 
-        print("linking failure")
+        print("linking failure: " + aipfile[3])
         # update am-2-atom link status
         sql = "UPDATE aipfiles SET atomURL = ?, atomLinkStatus = ?, atomLinkDate = ? WHERE uuid = ?"
         sqliteCursor.execute(
