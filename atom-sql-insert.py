@@ -35,46 +35,73 @@ for aip in allaips:
             # assign AtoM information object match
             object_id = result[0]["object_id"]
 
-            # stage the AIP file metadata to be inserted into AtoM DO description
-            esvalues = {
-                "aipUUID": aip[1],
-                "objectUUID": aip[0],
-                "formatName": aip[4],
-                "formatVersion": aip[5],
-                "formatRegistryKey": aip[6],
-                "formatRegistryName": aip[7],
-            }
+            if object_id is not None:
 
-            for key, value in esvalues.items():
-                # AtoM stores Archivematica metadata as Properties attached
-                # to the Digital Object's parent Information Object.
-                # We need to loop through and create a Property for each
-                # Archivematica metadata value.
-                sql = "INSERT INTO `property` (`object_id`, `name`, `source_culture`) VALUES (%s, %s, %s)"
-                mysqlCursor.execute(sql, (object_id, key, "en"))
-                property_id = mysqlCursor.lastrowid
-                sql = "INSERT INTO `property_i18n` (`value`, `id`, `culture`) VALUES (%s, %s, %s)"
-                mysqlCursor.execute(sql, (value, property_id, "en"))
+                print("match found for " + aip[3])
 
-            # only commit if all properties are succesfully updated
-            mysqlConnection.commit()
-            mysqlCursor.close()
+                # stage the AIP file metadata to be inserted into AtoM DO description
+                esvalues = {
+                    "aipUUID": aip[1],
+                    "objectUUID": aip[0],
+                    "formatName": aip[4],
+                    "formatVersion": aip[5],
+                    "formatRegistryKey": aip[6],
+                    "formatRegistryName": aip[7],
+                }
 
-            sql = "SELECT `slug` FROM slug WHERE `object_id`= %s"
-            slug = mysqlCursor.execute(sql, (object_id))
+                for key, value in esvalues.items():
+                    # AtoM stores Archivematica metadata as Properties attached
+                    # to the Digital Object's parent Information Object.
+                    # We need to loop through and create a Property for each
+                    # Archivematica metadata value.
+                    sql = "INSERT INTO `property` (`object_id`, `name`, `source_culture`) VALUES (%s, %s, %s)"
+                    mysqlCursor.execute(sql, (object_id, key, "en"))
+                    property_id = mysqlCursor.lastrowid
+                    sql = "INSERT INTO `property_i18n` (`value`, `id`, `culture`) VALUES (%s, %s, %s)"
+                    mysqlCursor.execute(sql, (value, property_id, "en"))
 
-            # update am-2-atom link status
-            sql = "UPDATE aipfiles SET atomURL = ?, atomSlug = ?, atomLinkStatus = ?, atomLinkDate = ? WHERE uuid = ?"
-            sqliteCursor.execute(
-                sql,
-                (atomSiteURL, slug, "success", str(datetime.datetime.now()), aip[0]),
-            )
-            sqliteDb.commit()
+                # only commit if all properties are succesfully updated
+                mysqlConnection.commit()
+                mysqlCursor.close()
+
+                sql = "SELECT `slug` FROM slug WHERE `object_id`= %s"
+                mysqlCursor.execute(sql, object_id)
+                result = mysqlCursor.fetchone()
+                slug = result["slug"]
+
+                # update am-2-atom link status
+                sql = "UPDATE aipfiles SET atomURL = ?, atomSlug = ?, atomLinkStatus = ?, atomLinkDate = ? WHERE uuid = ?"
+                sqliteCursor.execute(
+                    sql,
+                    (
+                        atomSiteURL,
+                        slug,
+                        "success",
+                        str(datetime.datetime.now()),
+                        aip[0],
+                    ),
+                )
+
+                sqliteDb.commit()
+
+            else:
+                print("no match found for " + aip[3])
+
+                # update am-2-atom link status
+                sql = "UPDATE aipfiles SET atomURL = ?, atomLinkStatus = ?, atomLinkDate = ? WHERE uuid = ?"
+                sqliteCursor.execute(
+                    sql, (atomSiteURL, "no match", str(datetime.datetime.now()), aip[0])
+                )
+
+                sqliteDb.commit()
 
     except:
+        print("linking failure")
         # update am-2-atom link status
-        sql = "UPDATE aipfiles SET atomLinkStatus = ?, atomLinkDate = ? WHERE uuid = ?"
-        sqliteCursor.execute(sql, ("fail", str(datetime.datetime.now()), aip[0]))
+        sql = "UPDATE aipfiles SET atomURL = ?, atomLinkStatus = ?, atomLinkDate = ? WHERE uuid = ?"
+        sqliteCursor.execute(
+            sql, (atomSiteURL, "failure", str(datetime.datetime.now()), aip[0])
+        )
         sqliteDb.commit()
 
 mysqlConnection.close()
