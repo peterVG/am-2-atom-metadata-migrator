@@ -31,11 +31,10 @@ for aip in allaips:
             sql = "SELECT `object_id` FROM digital_object WHERE `name`= %s"
             # find match for aipfile's filename
             mysqlCursor.execute(sql, (aip[3]))
-            result = mysqlCursor.fetchall()
-            # assign AtoM information object match
-            object_id = result[0]["object_id"]
+            result = mysqlCursor.fetchone()
 
-            if object_id is not None:
+            if result:
+		object_id = result["object_id"]
 
                 print("match found for " + aip[3])
 
