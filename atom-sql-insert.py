@@ -20,9 +20,13 @@ mysqlConnection = pymysql.connect(
 )
 
 sqliteCursor.execute("""SELECT * FROM aipfiles""")
-allaips = sqliteCursor.fetchall()
+allaipfiles = sqliteCursor.fetchall()
 
-for aip in allaips:
+for aipfile in allaipfiles:
+    # skip file if has already been matched
+    if aipfile[11] == "success":
+        print(aipfile[3] + " already matched")
+        continue
     try:
 
         with mysqlConnection:
@@ -30,23 +34,23 @@ for aip in allaips:
 
             sql = "SELECT `object_id` FROM digital_object WHERE `name`= %s"
             # find match for aipfile's filename
-            mysqlCursor.execute(sql, (aip[3]))
+            mysqlCursor.execute(sql, (aipfile[3]))
             result = mysqlCursor.fetchone()
 
             if result:
-                print("match found for " + aip[3])
+                print("match found for " + aipfile[3])
 
                 # assign AtoM information object match
                 object_id = result["object_id"]
 
                 # stage the AIP file metadata to be inserted into AtoM DO description
                 esvalues = {
-                    "aipUUID": aip[1],
-                    "objectUUID": aip[0],
-                    "formatName": aip[4],
-                    "formatVersion": aip[5],
-                    "formatRegistryKey": aip[6],
-                    "formatRegistryName": aip[7],
+                    "aipUUID": aipfile[1],
+                    "objectUUID": aipfile[0],
+                    "formatName": aipfile[4],
+                    "formatVersion": aipfile[5],
+                    "formatRegistryKey": aipfile[6],
+                    "formatRegistryName": aipfile[7],
                 }
 
                 for key, value in esvalues.items():
@@ -79,7 +83,7 @@ for aip in allaips:
                         slug,
                         "success",
                         str(datetime.datetime.now()),
-                        aip[0],
+                        aipfile[0],
                     ),
                 )
 
@@ -88,7 +92,7 @@ for aip in allaips:
             else:
                 mysqlCursor.close()
 
-                print("no match found for " + aip[3])
+                print("no match found for " + aipfile[3])
 
                 # update am-2-atom link status
                 sql = "UPDATE aipfiles SET atomURL = ?, atomLinkStatus = ?, atomLinkDate = ? WHERE uuid = ?"
@@ -105,7 +109,7 @@ for aip in allaips:
         # update am-2-atom link status
         sql = "UPDATE aipfiles SET atomURL = ?, atomLinkStatus = ?, atomLinkDate = ? WHERE uuid = ?"
         sqliteCursor.execute(
-            sql, (atomSiteURL, "failure", str(datetime.datetime.now()), aip[0])
+            sql, (atomSiteURL, "failure", str(datetime.datetime.now()), aipfile[0])
         )
         sqliteDb.commit()
 
