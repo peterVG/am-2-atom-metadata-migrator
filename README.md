@@ -3,7 +3,9 @@
 
 These scripts are a tool to automate the migration of [Archivematica](https://archivematica.org) metadata in scenarios where access copies already exist in [AtoM](https://accesstomemory.org). Using the existing DIP Upload functionality, it is currently not possible to add Archivematica metadata without creating new AtoM descriptions.
 
-This tool reads data from the Archivematica Elasticsearch index and inserts it into the AtoM MySQL database. It currently uses a match between Archivematica AIP file filenames and AtoM digital object filenames. A future version could implement more complex heuristics to make a match.
+This tool reads data from the Archivematica Elasticsearch index and inserts it into the AtoM MySQL database. A future version may write this data to an AtoM Application Programming Interface (API) instead.
+
+The **am-2-to-atom-metadadata-migrator** tool currently uses a match between Archivematica AIP filenames and AtoM digital object filenames. A future version could implement more complex heuristics to make a match.
 
 ## Instructions
 * Move the **am-es-query.py** script to the server that hosts your Archivematica Elasticsearch server.
