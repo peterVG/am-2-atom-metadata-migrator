@@ -62,12 +62,13 @@ for aip in allaips:
 
                 # only commit if all properties are succesfully updated
                 mysqlConnection.commit()
-                mysqlCursor.close()
 
                 sql = "SELECT `slug` FROM slug WHERE `object_id`= %s"
                 mysqlCursor.execute(sql, object_id)
                 result = mysqlCursor.fetchone()
                 slug = result["slug"]
+
+                mysqlCursor.close()
 
                 # update am-2-atom link status
                 sql = "UPDATE aipfiles SET atomURL = ?, atomSlug = ?, atomLinkStatus = ?, atomLinkDate = ? WHERE uuid = ?"
@@ -85,6 +86,8 @@ for aip in allaips:
                 sqliteDb.commit()
 
             else:
+                mysqlCursor.close()
+
                 print("no match found for " + aip[3])
 
                 # update am-2-atom link status
@@ -96,6 +99,8 @@ for aip in allaips:
                 sqliteDb.commit()
 
     except:
+        mysqlCursor.close()
+
         print("linking failure")
         # update am-2-atom link status
         sql = "UPDATE aipfiles SET atomURL = ?, atomLinkStatus = ?, atomLinkDate = ? WHERE uuid = ?"
