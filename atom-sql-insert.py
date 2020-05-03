@@ -31,13 +31,13 @@ for aip in allaips:
             sql = "SELECT `object_id` FROM digital_object WHERE `name`= %s"
             # find match for aipfile's filename
             mysqlCursor.execute(sql, (aip[3]))
-            result = mysqlCursor.fetchall()
-            # assign AtoM information object match
-            object_id = result[0]["object_id"]
+            result = mysqlCursor.fetchone()
 
-            if object_id is not None:
-
+            if result:
                 print("match found for " + aip[3])
+
+                # assign AtoM information object match
+                object_id = result["object_id"]
 
                 # stage the AIP file metadata to be inserted into AtoM DO description
                 esvalues = {
