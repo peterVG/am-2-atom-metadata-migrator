@@ -5,6 +5,7 @@ These scripts are a tool to automate the migration of Archivematica metadata in 
 
 This tool reads data from the Archivematica Elasticsearch index and inserts it into the AtoM MySQL database. It currently uses a match between Archivematica AIP file filenames and AtoM digital object filenames. A future version could implement more complex heuristics to make a match.
 
+## Instructions
 * Move the 'am-es-query.py' script to the server that hosts your Archivematica Elasticsearch server.
 * If needed, change the server address at the top of the script.
 * Create a Python virtual environment or run using your native Python installation (both 2.x and 3.x will work).
