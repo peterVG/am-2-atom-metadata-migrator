@@ -2,14 +2,16 @@ import pymysql.cursors
 import sqlite3
 import datetime
 
+# change this value to match the name given to your Sqlite database
+# by the 'am-es-query.py' script. Note that the UUID in the name
+# refers to the Archivematica pipeline ID.
 sqliteDbName = "am_es_cdd02460-c432-4bdc-bca3-34ae3fb006a6.db"
+
+# change this value to match the AtoM site for which matches will be made
 atomSiteURL = "http://10.10.10.10/"
 
-# Connect to the am-2-atom-metadata-migrator Sqlite database
-sqliteDb = sqlite3.connect(sqliteDbName)
-sqliteCursor = sqliteDb.cursor()
-
-# Connect to the AtoM MySQL database
+# connect to the AtoM MySQL database
+# change these values to match those for your AtoM site's MySQL server
 mysqlConnection = pymysql.connect(
     host="localhost",
     user="atom-user",
@@ -19,10 +21,15 @@ mysqlConnection = pymysql.connect(
     cursorclass=pymysql.cursors.DictCursor,
 )
 
+# Connect to the am-2-atom-metadata-migrator Sqlite database
+sqliteDb = sqlite3.connect(sqliteDbName)
+sqliteCursor = sqliteDb.cursor()
+
 sqliteCursor.execute("""SELECT * FROM aipfiles""")
 allaipfiles = sqliteCursor.fetchall()
 
 for aipfile in allaipfiles:
+
     # skip file if has already been matched
     if aipfile[11] == "success":
         print("already matched: " + aipfile[3])

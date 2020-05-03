@@ -7,7 +7,8 @@ from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import RequestError, NotFoundError
 
 
-# Connect to Elasticsearch
+# connect to Elasticsearch
+# change this value to match your Elasticsearch server
 es = Elasticsearch(["http://localhost:9200"])
 
 
